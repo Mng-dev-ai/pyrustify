@@ -70,20 +70,20 @@ pub(crate) fn is_deliverable(email: &str) -> Option<bool> {
     // if a socks5 proxy is configured, use it
     if settings.use_socks5 {
         // check if the socks5 username and password are set
-        let socks5_config;
-        if settings.socks5_username.is_some() && settings.socks5_password.is_some() {
-            socks5_config = Socks5Config::new_with_user_pass(
-                settings.socks5_host.unwrap(),
-                settings.socks5_port.unwrap() as u16,
-                settings.socks5_username.unwrap(),
-                settings.socks5_password.unwrap(),
-            );
-        } else {
-            socks5_config = Socks5Config::new(
-                settings.socks5_host.unwrap(),
-                settings.socks5_port.unwrap() as u16,
-            );
-        };
+        let socks5_config =
+            if settings.socks5_username.is_some() && settings.socks5_password.is_some() {
+                Socks5Config::new_with_user_pass(
+                    settings.socks5_host.unwrap(),
+                    settings.socks5_port.unwrap() as u16,
+                    settings.socks5_username.unwrap(),
+                    settings.socks5_password.unwrap(),
+                ) as Socks5Config
+            } else {
+                Socks5Config::new(
+                    settings.socks5_host.unwrap(),
+                    settings.socks5_port.unwrap() as u16,
+                ) as Socks5Config
+            };
         smtp_client = smtp_client.use_socks5(socks5_config);
     }
     let mut smtp_transport = smtp_client.into_transport();
