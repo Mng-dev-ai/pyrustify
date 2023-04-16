@@ -10,12 +10,6 @@ jobs:
   # Cargo check.
   check:
     runs-on: ubuntu-latest
-    env:
-      SOCKS5_HOST: ${{ secrets.SOCKS5_HOST }}
-      SOCKS5_PORT: ${{ secrets.SOCKS5_PORT }}
-      SOCKS5_USERNAME: ${{ secrets.SOCKS5_USERNAME }}
-      SOCKS5_PASSWORD: ${{ secrets.SOCKS5_PASSWORD }}
-
     steps:
       - name: Checkout sources
         uses: actions/checkout@v2
@@ -49,6 +43,11 @@ jobs:
 
       - name: Run cargo test
         uses: actions-rs/cargo@v1
+        env:
+          SOCKS5_HOST: ${{ secrets.SOCKS5_HOST }}
+          SOCKS5_PORT: ${{ secrets.SOCKS5_PORT }}
+          SOCKS5_USERNAME: ${{ secrets.SOCKS5_USERNAME }}
+          SOCKS5_PASSWORD: ${{ secrets.SOCKS5_PASSWORD }}
         with:
           command: test
           args: --all
