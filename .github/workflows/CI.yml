@@ -11,6 +11,13 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      - name: Setting up environment
+        env:
+          SOCKS5_HOST: ${{ secrets.SOCKS5_HOST }}
+          SOCKS5_PORT: ${{ secrets.SOCKS5_PORT }}
+          SOCKS5_USERNAME: ${{ secrets.SOCKS5_USERNAME }}
+          SOCKS5_PASSWORD: ${{ secrets.SOCKS5_PASSWORD }}
+      
       - name: Checkout sources
         uses: actions/checkout@v2
 
