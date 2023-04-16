@@ -4,7 +4,7 @@ use crate::utils::is_valid;
 
 use async_native_tls::TlsConnector;
 use async_smtp::{
-    smtp::{commands::*, extension::ClientId, ClientSecurity, ServerAddress, Socks5Config},
+    smtp::{commands::*, extension::ClientId, ClientSecurity, ServerAddress},
     ClientTlsParameters, EmailAddress, SmtpClient,
 };
 use pyo3::{types::PyDict, PyObject, Python, ToPyObject};
@@ -59,7 +59,7 @@ pub(crate) fn is_deliverable(email: &str) -> Option<bool> {
             .danger_accept_invalid_certs(true)
             .danger_accept_invalid_hostnames(true),
     ));
-    let mut smtp_client = SmtpClient::with_security(
+    let smtp_client = SmtpClient::with_security(
         ServerAddress::new(smtp_server, settings.smtp_port.try_into().unwrap()),
         security,
     )
@@ -67,25 +67,6 @@ pub(crate) fn is_deliverable(email: &str) -> Option<bool> {
     .timeout(Some(Duration::from_secs(
         settings.smtp_timeout.try_into().unwrap(),
     )));
-    // if a socks5 proxy is configured, use it
-    if settings.use_socks5 {
-        // check if the socks5 username and password are set
-        let socks5_config;
-        if settings.socks5_username.is_some() && settings.socks5_password.is_some() {
-            socks5_config = Socks5Config::new_with_user_pass(
-                settings.socks5_host.unwrap(),
-                settings.socks5_port.unwrap() as u16,
-                settings.socks5_username.unwrap(),
-                settings.socks5_password.unwrap(),
-            );
-        } else {
-            socks5_config = Socks5Config::new(
-                settings.socks5_host.unwrap(),
-                settings.socks5_port.unwrap() as u16,
-            );
-        };
-        smtp_client = smtp_client.use_socks5(socks5_config);
-    }
     let mut smtp_transport = smtp_client.into_transport();
     // try to connect to the server
     let _response = runtime.block_on(smtp_transport.connect());
@@ -128,10 +109,5 @@ mod tests {
     #[test]
     fn test_check_smtp_for_non_existing_email() {
         assert_eq!(is_deliverable("nonexistingemail@example.org"), Some(false));
-    }
-    #[test]
-    fn test_check_smtp_for_existing_email_with_socks5() {
-        std::env::set_var("USE_SOCKS5", "true");
-        assert_eq!(is_deliverable("nagymichel13@gmail.com"), Some(true));
     }
 }

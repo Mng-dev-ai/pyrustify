@@ -68,13 +68,6 @@ You can configure PyRustify by setting the following environment variables:
 - `CHECK_SMTP`: Whether to check the email deliverability by sending a SMTP request. Default is `false`.
 - `CHECK_MX`: Whether to check the MX records of the email address. Default is `false`.
 - `CHECK_MISC`: Whether to check the misc features of the email address. Default is `false`.
-- `USE_SOCKS5`: Whether to use a SOCKS5 proxy for the SMTP request. Default is `false`.
-- `SOCKS5_HOST`: The hostname or IP address of the SOCKS5 proxy server.
-- `SOCKS5_PORT`: The port number to use for the SOCKS5 proxy server.
-- `SOCKS5_USERNAME`: The username for the SOCKS5 proxy server. Optional.
-- `SOCKS5_PASSWORD`: The password for the SOCKS5 proxy server. Optional.
-
-
 
 For example, you can set these variables in your terminal before running your Python script:
 

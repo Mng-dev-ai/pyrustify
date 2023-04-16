@@ -21,11 +21,6 @@ pub struct Settings {
     pub check_smtp: bool,
     pub check_mx: bool,
     pub check_misc: bool,
-    pub use_socks5: bool,
-    pub socks5_host: Option<String>,
-    pub socks5_port: Option<i32>,
-    pub socks5_username: Option<String>,
-    pub socks5_password: Option<String>,
 }
 
 impl Settings {
@@ -46,26 +41,6 @@ impl Settings {
             Ok(val) => val == "true",
             Err(_) => false,
         };
-        let use_socks5 = match std::env::var("USE_SOCKS5") {
-            Ok(val) => val == "true",
-            Err(_) => false,
-        };
-        let socks5_host = match std::env::var("SOCKS5_HOST") {
-            Ok(val) => Some(val),
-            Err(_) => None,
-        };
-        let socks5_port = match std::env::var("SOCKS5_PORT") {
-            Ok(val) => Some(val.parse().unwrap_or(1080)),
-            Err(_) => None,
-        };
-        let socks5_username = match std::env::var("SOCKS5_USERNAME") {
-            Ok(val) => Some(val),
-            Err(_) => None,
-        };
-        let socks5_password = match std::env::var("SOCKS5_PASSWORD") {
-            Ok(val) => Some(val),
-            Err(_) => None,
-        };
         Settings {
             from_email,
             hello_name,
@@ -74,11 +49,6 @@ impl Settings {
             check_smtp,
             check_mx,
             check_misc,
-            use_socks5,
-            socks5_host,
-            socks5_port,
-            socks5_username,
-            socks5_password,
         }
     }
 }
