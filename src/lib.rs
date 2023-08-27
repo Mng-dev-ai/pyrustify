@@ -37,9 +37,15 @@ impl ToPyObject for Result {
         dict.set_item("email", self.email.to_object(py)).unwrap();
         dict.set_item("has_valid_syntax", self.has_valid_syntax.to_object(py))
             .unwrap();
-        if let Some(mx) = self.mx.as_ref() { dict.set_item("mx", mx.to_object(py)).unwrap() }
-        if let Some(misc) = self.misc.as_ref() { dict.set_item("misc", misc.to_object(py)).unwrap() }
-        if let Some(smtp) = self.smtp.as_ref() { dict.set_item("smtp", smtp.to_object(py)).unwrap() }   
+        if let Some(mx) = self.mx.as_ref() {
+            dict.set_item("mx", mx.to_object(py)).unwrap()
+        }
+        if let Some(misc) = self.misc.as_ref() {
+            dict.set_item("misc", misc.to_object(py)).unwrap()
+        }
+        if let Some(smtp) = self.smtp.as_ref() {
+            dict.set_item("smtp", smtp.to_object(py)).unwrap()
+        }
         dict.to_object(py)
     }
 }
