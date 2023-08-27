@@ -4,15 +4,9 @@ mod settings;
 mod smtp;
 mod utils;
 
-use crate::misc::*;
-use crate::mx::*;
-use crate::settings::Settings;
-use crate::smtp::*;
-use crate::utils::*;
+use crate::{misc::*, mx::*, settings::Settings, smtp::*, utils::*};
 
-use pyo3::conversion::ToPyObject;
-use pyo3::types::PyDict;
-use pyo3::{prelude::*, wrap_pyfunction};
+use pyo3::{conversion::ToPyObject, prelude::*, types::PyDict, wrap_pyfunction};
 use rayon::prelude::*;
 
 #[derive(Debug)]
@@ -26,28 +20,13 @@ struct Result {
 
 impl Result {
     fn new(email: &str, settings: &Settings) -> Self {
-        let has_valid_syntax = is_valid(email);
-        let mx = if settings.check_mx {
-            Some(Mx::new(email))
-        } else {
-            None
-        };
-        let misc = if settings.check_misc {
-            Some(Misc::new(email))
-        } else {
-            None
-        };
-        let smtp = if settings.check_smtp {
-            Some(Smtp::new(email))
-        } else {
-            None
-        };
+        let email = email.to_string();
         Self {
-            email: email.to_string(),
-            has_valid_syntax,
-            mx,
-            misc,
-            smtp,
+            email: email.clone(),
+            has_valid_syntax: is_valid(&email),
+            mx: settings.check_mx.then(|| Mx::new(&email)),
+            misc: settings.check_misc.then(|| Misc::new(&email)),
+            smtp: settings.check_smtp.then(|| Smtp::new(&email)),
         }
     }
 }
@@ -58,29 +37,31 @@ impl ToPyObject for Result {
         dict.set_item("email", self.email.to_object(py)).unwrap();
         dict.set_item("has_valid_syntax", self.has_valid_syntax.to_object(py))
             .unwrap();
-        if let Some(mx) = &self.mx {
-            dict.set_item("mx", mx.to_object(py)).unwrap();
+        if let Some(mx) = self.mx.as_ref() {
+            dict.set_item("mx", mx.to_object(py)).unwrap()
         }
-        if let Some(misc) = &self.misc {
-            dict.set_item("misc", misc.to_object(py)).unwrap();
+        if let Some(misc) = self.misc.as_ref() {
+            dict.set_item("misc", misc.to_object(py)).unwrap()
         }
-        if let Some(smtp) = &self.smtp {
-            dict.set_item("smtp", smtp.to_object(py)).unwrap();
+        if let Some(smtp) = self.smtp.as_ref() {
+            dict.set_item("smtp", smtp.to_object(py)).unwrap()
         }
         dict.to_object(py)
     }
 }
 #[pyfunction]
 fn verify_email(email: &str) -> PyResult<PyObject> {
-    let result = Result::new(email, &Settings::new());
+    let settings = Settings::new();
+    let result = Result::new(email, &settings);
     Ok(pyo3::Python::with_gil(|py| result.to_object(py)))
 }
 
 #[pyfunction]
 fn verify_emails(emails: Vec<&str>) -> PyResult<PyObject> {
+    let settings = Settings::new();
     let results: Vec<Result> = emails
         .par_iter() // rayon is used to parallelize the validation
-        .map(|email| Result::new(email, &Settings::new()))
+        .map(|email| Result::new(email, &settings))
         .collect();
     Ok(pyo3::Python::with_gil(|py| results.to_object(py)))
 }

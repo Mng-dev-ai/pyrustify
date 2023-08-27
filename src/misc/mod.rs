@@ -1,10 +1,31 @@
 use crate::utils::is_valid;
+use lazy_static::lazy_static;
 use pyo3::{types::PyDict, PyObject, Python, ToPyObject};
 use reqwest::blocking::Client;
+use std::collections::HashSet;
 
 const DISPOSABLE_DATA_URL: &str =
     "https://raw.githubusercontent.com/7c/fakefilter/main/txt/data.txt";
 const FREE_EMAIL_URL: &str = "https://gist.githubusercontent.com/okutbay/5b4974b70673dfdcc21c517632c1f984/raw/free_email_provider_domains.txt";
+
+lazy_static! {
+    static ref DISPOSABLE_DOMAINS: HashSet<String> = {
+        let client = Client::new();
+        let response = client.get(DISPOSABLE_DATA_URL).send().unwrap();
+        let text = response.text().unwrap_or_default();
+        text.lines()
+            .map(|line| line.trim().to_lowercase())
+            .collect()
+    };
+    static ref FREE_EMAIL_DOMAINS: HashSet<String> = {
+        let client = Client::new();
+        let response = client.get(FREE_EMAIL_URL).send().unwrap();
+        let text = response.text().unwrap_or_default();
+        text.lines()
+            .map(|line| line.trim().to_lowercase())
+            .collect()
+    };
+}
 
 #[derive(Debug)]
 pub(crate) struct Misc {
@@ -38,49 +59,16 @@ fn is_disposable(email: &str) -> Option<bool> {
     if !is_valid(email) {
         return None;
     }
-    let domain = email.split('@').last().unwrap();
-    let client = Client::new();
-    let response = client.get(DISPOSABLE_DATA_URL).send();
-    match response {
-        Ok(response) => {
-            if response.status().is_success() {
-                let text = response.text().unwrap_or_default();
-                for line in text
-                    .lines()
-                    .filter(|l| !l.is_empty() && !l.starts_with('#'))
-                {
-                    if line.trim().eq_ignore_ascii_case(domain) {
-                        return Some(true);
-                    }
-                }
-                Some(false)
-            } else {
-                None
-            }
-        }
-        Err(_) => None,
-    }
+    let domain = email.split('@').last().unwrap().to_lowercase();
+    Some(DISPOSABLE_DOMAINS.contains(&domain))
 }
 
 fn is_free(email: &str) -> Option<bool> {
     if !is_valid(email) {
         return None;
     }
-    let domain = email.split('@').last().unwrap();
-    match Client::new().get(FREE_EMAIL_URL).send() {
-        Ok(response) => {
-            if response.status().is_success() {
-                let text = response.text().unwrap_or_default();
-                let is_free = text
-                    .lines()
-                    .any(|line| line.trim().eq_ignore_ascii_case(domain));
-                Some(is_free)
-            } else {
-                None
-            }
-        }
-        Err(_) => None,
-    }
+    let domain = email.split('@').last().unwrap().to_lowercase();
+    Some(FREE_EMAIL_DOMAINS.contains(&domain))
 }
 fn is_role_account(email: &str) -> Option<bool> {
     if !is_valid(email) {
