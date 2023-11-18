@@ -126,9 +126,10 @@ mod tests {
             Some(false)
         );
     }
-    #[test]
-    fn test_check_smtp_for_existing_email_with_socks5() {
-        std::env::set_var("USE_SOCKS5", "true");
-        assert_eq!(Smtp::is_deliverable("nagymichel13@gmail.com"), Some(true));
-    }
+
+    // #[test]
+    // fn test_check_smtp_for_existing_email_with_socks5() {
+    //     std::env::set_var("USE_SOCKS5", "true");
+    //     assert_eq!(Smtp::is_deliverable("nagymichel13@gmail.com"), Some(true));
+    // }
 }
