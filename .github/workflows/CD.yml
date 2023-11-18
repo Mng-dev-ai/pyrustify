@@ -18,9 +18,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Install OpenSSL
-        run: sudo apt-get update && sudo apt-get install -y libssl-dev
-      - name: Set OPENSSL_DIR
-        run: echo "OPENSSL_DIR=/usr/include/openssl" >> $GITHUB_ENV
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev
+      - name: Set PKG_CONFIG_PATH
+        run: |
+          echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig" >> $GITHUB_ENV
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
