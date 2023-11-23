@@ -20,6 +20,11 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install libssl-dev pkg-config
+
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
@@ -30,7 +35,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
-          name: wheels-${{ matrix.python-version }}-${{ matrix.target }}
+          name: dist
           path: dist
 
   windows:
@@ -54,7 +59,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
-          name: wheels-${{ matrix.python-version }}-${{ matrix.target }}
+          name: dist
           path: dist
 
   macos:
@@ -77,7 +82,7 @@ jobs:
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
-          name: wheels-${{ matrix.python-version }}-${{ matrix.target }}
+          name: dist
           path: dist
 
   sdist:
@@ -92,7 +97,7 @@ jobs:
       - name: Upload sdist
         uses: actions/upload-artifact@v3
         with:
-          name: wheels
+          name: dist
           path: dist
 
   release:
@@ -102,11 +107,12 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: wheels
+          name: dist
+          path: dist
       - name: Publish to PyPI
         uses: PyO3/maturin-action@v1
         env:
           MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
         with:
           command: upload
-          args: --skip-existing *
+          args: --skip-existing dist/*
