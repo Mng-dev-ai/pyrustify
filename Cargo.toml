@@ -22,3 +22,12 @@ async-native-tls = { version = "0.4", default-features = false }
 regex = "1.9"
 lazy_static = "1.4"
 openssl = { version = "0.10", features = ["vendored"] }
+
+[profile.release]
+codegen-units = 1
+debug = false
+incremental = false
+lto = true
+opt-level = 3
+panic = "abort"
+strip = true
