@@ -27,15 +27,16 @@ jobs:
 
       - name: Set PKG_CONFIG_PATH
         run: |
-          OPENSSL_PC_PATH=$(find /usr -name 'openssl.pc')
-          if [ -n "$OPENSSL_PC_PATH" ]; then
-            PKG_CONFIG_DIR=$(dirname "$OPENSSL_PC_PATH")
-            echo "PKG_CONFIG_PATH set to $PKG_CONFIG_DIR"
-            export PKG_CONFIG_PATH=$PKG_CONFIG_DIR
-            echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> $GITHUB_ENV
-          else
-            echo "openssl.pc not found"
-          fi
+          OPENSSL_PC_PATHS=$(find /usr -name 'openssl.pc')
+          for OPENSSL_PC_PATH in $OPENSSL_PC_PATHS; do
+            if [[ $OPENSSL_PC_PATH == "/usr/lib/"* || $OPENSSL_PC_PATH == "/usr/local/lib/"* ]]; then
+              PKG_CONFIG_DIR=$(dirname "$OPENSSL_PC_PATH")
+              echo "PKG_CONFIG_PATH set to $PKG_CONFIG_DIR"
+              export PKG_CONFIG_PATH=$PKG_CONFIG_DIR
+              echo "PKG_CONFIG_PATH=$PKG_CONFIG_PATH" >> $GITHUB_ENV
+              break
+            fi
+          done
 
       - name: Build wheels
         uses: PyO3/maturin-action@v1
