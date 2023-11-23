@@ -34,19 +34,19 @@ impl ToPyObject for Result {
     fn to_object(&self, py: Python) -> PyObject {
         let dict = PyDict::new(py);
 
-        dict.set_item("email", self.email.to_object(py)).unwrap();
-        dict.set_item("has_valid_syntax", self.has_valid_syntax.to_object(py))
+        dict.set_item("email", self.email.clone()).unwrap();
+        dict.set_item("has_valid_syntax", self.has_valid_syntax)
             .unwrap();
         if let Some(mx) = self.mx.as_ref() {
-            dict.set_item("mx", mx.to_object(py)).unwrap()
+            dict.set_item("mx", mx).unwrap()
         }
         if let Some(misc) = self.misc.as_ref() {
-            dict.set_item("misc", misc.to_object(py)).unwrap()
+            dict.set_item("misc", misc).unwrap()
         }
         if let Some(smtp) = self.smtp.as_ref() {
-            dict.set_item("smtp", smtp.to_object(py)).unwrap()
+            dict.set_item("smtp", smtp).unwrap()
         }
-        dict.to_object(py)
+        dict.into()
     }
 }
 #[pyfunction]

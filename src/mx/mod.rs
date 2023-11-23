@@ -22,11 +22,11 @@ impl Mx {
 impl ToPyObject for Mx {
     fn to_object(&self, py: Python) -> PyObject {
         let dict = PyDict::new(py);
-        dict.set_item("has_mx_records", self.has_mx_records.to_object(py))
+        dict.set_item("has_mx_records", self.has_mx_records)
             .unwrap();
-        dict.set_item("mx_records", self.mx_records.to_object(py))
+        dict.set_item("mx_records", self.mx_records.clone())
             .unwrap();
-        dict.to_object(py)
+        dict.into()
     }
 }
 

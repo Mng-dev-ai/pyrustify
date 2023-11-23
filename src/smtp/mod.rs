@@ -25,9 +25,9 @@ impl Smtp {
 impl ToPyObject for Smtp {
     fn to_object(&self, py: Python) -> PyObject {
         let dict = PyDict::new(py);
-        dict.set_item("is_deliverable", self.is_deliverable.to_object(py))
+        dict.set_item("is_deliverable", self.is_deliverable)
             .unwrap();
-        dict.to_object(py)
+        dict.into()
     }
 }
 impl Smtp {

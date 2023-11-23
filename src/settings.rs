@@ -33,7 +33,7 @@ impl Settings {
         let from_email = get_string_from_env("FROM_EMAIL", "user@example.org");
         let hello_name = get_string_from_env("HELLO_NAME", "localhost");
         let smtp_port = get_int_from_env("SMTP_PORT", 25);
-        let smtp_timeout = get_int_from_env("SMTP_TIMEOUT", 10);
+        let smtp_timeout = get_int_from_env("SMTP_TIMEOUT", 5);
         let check_smtp = match std::env::var("CHECK_SMTP") {
             Ok(val) => val == "true",
             Err(_) => false,
