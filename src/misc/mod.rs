@@ -45,13 +45,11 @@ impl Misc {
 impl ToPyObject for Misc {
     fn to_object(&self, py: Python) -> PyObject {
         let dict = PyDict::new(py);
-        dict.set_item("is_disposable", self.is_disposable.to_object(py))
+        dict.set_item("is_disposable", self.is_disposable).unwrap();
+        dict.set_item("is_free", self.is_free).unwrap();
+        dict.set_item("is_role_account", self.is_role_account)
             .unwrap();
-        dict.set_item("is_free", self.is_free.to_object(py))
-            .unwrap();
-        dict.set_item("is_role_account", self.is_role_account.to_object(py))
-            .unwrap();
-        dict.to_object(py)
+        dict.into()
     }
 }
 
