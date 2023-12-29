@@ -1,5 +1,8 @@
 # PyRustify
+[![PyPI version](https://badge.fury.io/py/pyrustify.svg)](https://badge.fury.io/py/pyrustify)
+[![Downloads](https://static.pepy.tech/personalized-badge/pyrustify?period=total&units=international_system&left_color=black&right_color=brightgreen&left_text=Downloads)](https://pepy.tech/project/pyrustify)
 
+## Introduction
 PyRustify is a Python package written in Rust that verifies the email addresses.
 
 ## Features
